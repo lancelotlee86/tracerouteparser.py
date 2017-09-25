@@ -135,6 +135,9 @@ class TracerouteParser(object):
         """Internal helper, parses a single line in the output."""
         parts = line.split()
         parts.pop(0) # Drop hop number, implicit in resulting sequence
+        if parts[0].startswith('(') and parts[0].endswith(')'):
+            # dealing with the situation of ip's name is "", empty string
+            parts.insert(0, '')
         hop = Hop()
         probe = None
 
