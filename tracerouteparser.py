@@ -37,7 +37,10 @@ Courtesy of the Netalyzr project: http://netalyzr.icsi.berkeley.edu
 # POSSIBILITY OF SUCH DAMAGE.
 
 from __future__ import print_function
-import six
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from io import StringIO
 import re
 
 class Header(object):
@@ -119,7 +122,7 @@ class TracerouteParser(object):
 
     def parse_data(self, data):
         """Parser entry point, given string of the whole traceroute output."""
-        self.parse_hdl(six.StringIO(data))
+        self.parse_hdl(StringIO(data))
 
     def parse_hdl(self, hdl):
         """Parser entry point, given readable file handle."""
