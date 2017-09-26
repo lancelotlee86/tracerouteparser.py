@@ -36,7 +36,8 @@ Courtesy of the Netalyzr project: http://netalyzr.icsi.berkeley.edu
 # IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import cStringIO
+from __future__ import print_function
+import six
 import re
 
 class Probe(object):
@@ -109,7 +110,7 @@ class TracerouteParser(object):
 
     def parse_data(self, data):
         """Parser entry point, given string of the whole traceroute output."""
-        self.parse_hdl(cStringIO.StringIO(data))
+        self.parse_hdl(six.StringIO(data))
 
     def parse_hdl(self, hdl):
         """Parser entry point, given readable file handle."""
@@ -209,7 +210,7 @@ traceroute to edgecastcdn.net (72.21.81.13), 30 hops max, 38 byte packets
 
     # Built-up data structures as string. Should look effectively
     # identical to the above input string.
-    print trp
+    print(trp)
 
 if __name__ == '__main__':
     demo()
