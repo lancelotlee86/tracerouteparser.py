@@ -40,6 +40,14 @@ from __future__ import print_function
 import six
 import re
 
+class Header(object):
+    """
+    traceroute header line information
+    """
+    def __init__(self, dest_ip, dest_name):
+        self.dest_ip = dest_ip
+        self.dest_name = dest_name
+
 class Probe(object):
     """
     Abstraction of an individual probe in a traceroute.
@@ -102,7 +110,7 @@ class TracerouteParser(object):
         self.hops = []
 
     def __str__(self):
-        res = ['traceroute to %s (%s)' % (self.dest_name, self.dest_ip) ]
+        res = ['traceroute to %s (%s)' % (self.header.dest_name, self.header.dest_ip) ]
         ctr = 1
         for hop in self.hops:
             res.append('%2d  %s' % (ctr, str(hop)))
@@ -118,6 +126,7 @@ class TracerouteParser(object):
         self.dest_ip = None
         self.dest_name = None
         self.hops = []
+        self.header = None
 
         for line in hdl:
             line = line.strip()
@@ -125,13 +134,22 @@ class TracerouteParser(object):
                 continue
             if line.lower().startswith('traceroute'):
                 # It's the header line at the beginning of the traceroute.
-                mob = self.HEADER_RE.match(line)
-                if mob:
-                    self.dest_ip = mob.group(2)
-                    self.dest_name = mob.group(1)
+                self.header = self._parse_header(line)
             else:
                 hop = self._parse_hop(line)
                 self.hops.append(hop)
+
+    def _parse_header(self, header):
+        """Internal helper, parses the header line"""
+        mob = self.HEADER_RE.match(header)
+        if mob:
+            dest_ip = mob.group(2)
+            dest_name = mob.group(1)
+        else:
+            dest_ip = None
+            dest_name = None
+        header = Header(dest_ip=dest_ip, dest_name=dest_name)
+        return header
 
     def _parse_hop(self, line):
         """Internal helper, parses a single line in the output."""
