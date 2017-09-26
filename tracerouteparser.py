@@ -63,8 +63,9 @@ class Hop(object):
     """
     A traceroute hop consists of a number of probes.
     """
-    def __init__(self):
-        self.idx = None # Hop count, starting at 1
+    def __init__(self, **kwargs):
+        self.idx = kwargs.get('idx') # Hop count, starting at 1
+                                    # idx will be None if idx keyword not given
         self.probes = [] # Series of Probe instances
 
     def add_probe(self, probe):
@@ -135,11 +136,12 @@ class TracerouteParser(object):
     def _parse_hop(self, line):
         """Internal helper, parses a single line in the output."""
         parts = line.split()
-        parts.pop(0) # Drop hop number, implicit in resulting sequence
+        idx = int(parts.pop(0)) # Drop hop number,implicit in resulting sequence
+                            # edit: keep and it is useful when parse single hop
         if parts[0].startswith('(') and parts[0].endswith(')'):
             # dealing with the situation of ip's name is "", empty string
             parts.insert(0, '')
-        hop = Hop()
+        hop = Hop(idx=idx)
         probe = None
 
         while len(parts) > 0:
